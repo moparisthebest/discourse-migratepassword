@@ -18,9 +18,9 @@
 gem 'bcrypt', '3.1.3'
 
 # for scrypt
-gem 'rake', '11.2.2'
-gem 'ffi', '1.9.14'
-gem 'ffi-compiler', '1.0.1'
+gem 'rake', '>= 11.2.2'
+gem 'ffi', '>= 1.0.0'
+gem 'ffi-compiler', '>= 1.0.0'
 gem 'scrypt', '3.0.1'
 
 require 'digest'
