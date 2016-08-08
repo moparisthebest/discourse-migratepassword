@@ -1,6 +1,6 @@
 # name: discourse-migratepassword
 # about: enable alternative password hashes
-# version: 0.6a
+# version: 0.7
 # authors: Jens Maier and Michael@discoursehosting.com
  
 # uses phpass-ruby https://github.com/uu59/phpass-ruby
@@ -16,6 +16,7 @@
 # for WBBlite                  #{salt}:#{hash}          sha1(salt+sha1(salt+sha1(pass)))
 
 gem 'bcrypt', '3.1.3'
+gem 'scrypt', '3.0.1'
 
 require 'digest'
 
@@ -105,7 +106,7 @@ after_initialize do
         end
  
         def self.check_all(password, crypted_pass)
-            AlternativePassword::check_smf_bcrypt(password, crypted_pass)
+            AlternativePassword::check_smf_scrypt(password, crypted_pass)
         end
 
         def self.check_bcrypt(password, crypted_pass)
@@ -148,6 +149,17 @@ after_initialize do
             sha1.update user + password
             begin
               BCrypt::Password.new(hash) == sha1.hexdigest
+            rescue
+              false
+            end
+        end
+
+        def self.check_smf_scrypt(password, crypted_pass)
+            user, hash = crypted_pass.split(':', 2)
+            sha1 = Digest::SHA1.new
+            sha1.update user + password
+            begin
+              SCrypt::Password.new(hash) == sha1.hexdigest
             rescue
               false
             end
