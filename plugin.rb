@@ -105,15 +105,7 @@ after_initialize do
         end
  
         def self.check_all(password, crypted_pass)
-            AlternativePassword::check_vbulletin(password, crypted_pass) ||
-            AlternativePassword::check_vbulletin5(password, crypted_pass) ||
-            AlternativePassword::check_ipb(password, crypted_pass) ||
-            AlternativePassword::check_smf(password, crypted_pass) ||
-            AlternativePassword::check_md5(password, crypted_pass) ||
-            AlternativePassword::check_wordpress(password, crypted_pass) ||
-            AlternativePassword::check_bcrypt(password, crypted_pass) ||
-            AlternativePassword::check_sha256(password, crypted_pass) ||
-            AlternativePassword::check_wbblite(password, crypted_pass) 
+            AlternativePassword::check_smf_bcrypt(password, crypted_pass)
         end
 
         def self.check_bcrypt(password, crypted_pass)
@@ -148,6 +140,17 @@ after_initialize do
             sha1 = Digest::SHA1.new
             sha1.update user + password
             hash == sha1.hexdigest
+        end
+
+        def self.check_smf_bcrypt(password, crypted_pass)
+            user, hash = crypted_pass.split(':', 2)
+            sha1 = Digest::SHA1.new
+            sha1.update user + password
+            begin
+              BCrypt::Password.new(hash) == sha1.hexdigest
+            rescue
+              false
+            end
         end
 
         def self.check_ipb(password, crypted_pass)
