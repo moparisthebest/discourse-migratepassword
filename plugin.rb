@@ -42,13 +42,13 @@ after_initialize do
 
         def self.check_smf(password, user, hash)
             sha1 = Digest::SHA1.new
-            sha1.update user + password
+            sha1.update user.downcase + password
             hash == sha1.hexdigest
         end
 
         #def self.check_smf_scrypt(password, user, hash)
         #    sha1 = Digest::SHA1.new
-        #    sha1.update user + password
+        #    sha1.update user.downcase + password
         #    begin
         #      SCrypt::Password.new(hash) == sha1.hexdigest
         #    rescue
